@@ -115,22 +115,20 @@ public class EmployeeService {
     if (employees.isEmpty())
       System.out.println("No existen registros de empleados. Puede crear uno seleccionando la opcion [1] del menu.");
     else {
-      boolean seen = false;
-      double acc = 0;
-      for (Employee e : getEmployees()) {
-        if (e.getSalary() > 7000000) {
-          double salary = e.getSalary();
-          if (!seen) {
-            seen = true;
-            acc = salary;
-          } else {
-            acc = acc + salary;
-          }
-        }
+      List<Employee> list = getEmployees()
+          .stream()
+          .filter(e -> e.getSalary() > 700000D)
+          .collect(Collectors.toList());
+      if (list.isEmpty())
+        System.out.println("No existen registros de empleados con suledos mayores a 700000.");
+      else {
+        Double sumSalary = list
+            .stream()
+            .mapToDouble(e -> e.getSalary())
+            .reduce(Double::sum)
+            .getAsDouble();
+        System.out.println(sumSalary);
       }
-      Double sumSalary = (seen ? OptionalDouble.of(acc) : OptionalDouble.empty())
-          .getAsDouble();
-      System.out.println(sumSalary);
     }
     System.out.println();
   }
@@ -165,82 +163,55 @@ public class EmployeeService {
 
   private static Integer captureID() {
     System.out.println("ID del empleado: ");
-    try {
-      Integer id = Util.getScanner().nextInt();
-      validateID(id);
-      return id;
-    } catch (InputMismatchException e) {
-      System.err.println("ID invalido!");
-      captureID();
-      return null;
+    Integer id = null;
+    while (Objects.isNull(id)) {
+      try {
+        id = Util.getScanner().nextInt();
+      } catch (InputMismatchException e) {
+        System.err.println("ID invalido!");
+      }
     }
-  }
-
-  private static void validateID(final Integer salary) {
-    if (Objects.isNull(salary)) {
-      System.err.println("Apellido invalido!");
-      captureID();
-    }
+    return id;
   }
 
   private static String captureFirstName() {
     System.out.println("Nombre del empleado: ");
-    try {
-      String name = Util.getScanner().nextLine();
-      validateFirstName(name);
-      return name;
-    } catch (InputMismatchException e) {
-      System.err.println("Nombre invalido!");
-      captureFirstName();
-      return null;
+    String firstName = null;
+    while (Objects.isNull(firstName)) {
+      try {
+        firstName = Util.getScanner().nextLine();
+      } catch (InputMismatchException e) {
+        System.err.println("Nombre invalido!");
+      }
     }
-  }
-
-  private static void validateFirstName(final String firstName) {
-    if (Objects.isNull(firstName)) {
-      System.err.println("Nombre invalido!");
-      captureFirstName();
-    }
+    return firstName;
   }
 
   private static String captureLastName() {
     System.out.println("Apellido del empleado: ");
-    try {
-      String name = Util.getScanner().nextLine();
-      validateLastName(name);
-      return name;
-    } catch (InputMismatchException e) {
-      System.err.println("Apellido invalido!");
-      captureLastName();
-      return null;
+    String lastName = null;
+    while (Objects.isNull(lastName)) {
+      try {
+        lastName = Util.getScanner().nextLine();
+      } catch (InputMismatchException e) {
+        System.err.println("Apellido invalido!");
+      }
     }
-  }
-
-  private static void validateLastName(final String lastName) {
-    if (Objects.isNull(lastName)) {
-      System.err.println("Apellido invalido!");
-      captureLastName();
-    }
+    return lastName;
   }
 
   private static Double captureSalary() {
     System.out.println("Salario del empleado: ");
-    try {
-      Double salary = Util.getScanner().nextDouble();
-      validateSalary(salary);
-      return salary;
-    } catch (InputMismatchException e) {
-      System.err.println("Salario invalido!");
-      captureSalary();
-      return null;
+    Double salary = null;
+    while (Objects.isNull(salary)) {
+      try {
+        salary = Util.getScanner().nextDouble();
+        return salary;
+      } catch (InputMismatchException e) {
+        System.err.println("Salario invalido!");
+      }
     }
-  }
-
-  private static void validateSalary(final Double salary) {
-    if (Objects.isNull(salary)) {
-      System.err.println("Apellido invalido!");
-      captureSalary();
-    }
+    return salary;
   }
 
   private static List<Employee> getEmployees() {
